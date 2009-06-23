@@ -1,7 +1,8 @@
-module Rails
+module Rails # expand the rails module
   
-  class << self
+  class << self # add metaclass methods
     
+    # Call this method from an initializer like so: Rails.extra_loggers = [ :one, :two ... ]
     def extra_loggers= loggers
       raise ArgumentError, "Params for loggers -#{loggers.inspect} don't look appropriate #{$@}" unless loggers.is_a?(Array)
       loggers.each do |logger|
@@ -11,10 +12,9 @@ module Rails
         path = "#{Rails.root}/log/#{logger.downcase}.log"
         new_file = !File.exist?(path)
         new_logger = ActiveSupport::BufferedLogger.new path
-        new_logger.info "" if new_file # => adds a line break if this is a new log
+        new_logger.info "" if new_file # adds a line break if this is a new log
         const = Object.const_set( "%s_LOGGER" % logger.upcase, new_logger )
-        # adds this method to Object - the mother of all classes!!!
-        Object.send(:define_method, :"#{logger.downcase}_logger") { const }
+        Object.send(:define_method, :"#{logger.downcase}_logger") { const } # adds this method to Object - the mother of all classes!!!
       end
     end
     
