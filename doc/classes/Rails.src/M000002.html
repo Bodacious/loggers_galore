@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>extra_loggers= (Rails)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/loggers_galore.rb, line 6</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">extra_loggers=</span> <span class="ruby-identifier">loggers</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Params for loggers -#{loggers.inspect} don't look appropriate #{$@}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">loggers</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
+      <span class="ruby-identifier">loggers</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">logger</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>)
+        <span class="ruby-identifier">logger</span> = <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">to_s</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;Can't call extra logger test, development or production... that would be confusing&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-node">%w( development test production )</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">logger</span>)
+        <span class="ruby-identifier">path</span> = <span class="ruby-node">&quot;#{Rails.root}/log/#{logger.downcase}.log&quot;</span>
+        <span class="ruby-identifier">new_file</span> = <span class="ruby-operator">!</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">path</span>)
+        <span class="ruby-identifier">new_logger</span> = <span class="ruby-constant">ActiveSupport</span><span class="ruby-operator">::</span><span class="ruby-constant">BufferedLogger</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">path</span>
+        <span class="ruby-identifier">new_logger</span>.<span class="ruby-identifier">info</span> <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">new_file</span> <span class="ruby-comment cmt"># adds a line break if this is a new log</span>
+        <span class="ruby-identifier">const</span> = <span class="ruby-constant">Kernel</span>.<span class="ruby-identifier">const_set</span>( <span class="ruby-value str">&quot;%s_LOGGER&quot;</span> <span class="ruby-operator">%</span> <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">upcase</span>, <span class="ruby-identifier">new_logger</span> )
+        <span class="ruby-constant">Kernel</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">:define_method</span>, <span class="ruby-node">&quot;#{logger.downcase}_logger&quot;</span><span class="ruby-node">&quot;#{logger.downcase}_logger&quot;</span>) { <span class="ruby-identifier">const</span> } <span class="ruby-comment cmt"># adds this method to Kernel, included in Object!!!</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

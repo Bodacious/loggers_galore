@@ -13,8 +13,8 @@ module Rails # expand the rails module
         new_file = !File.exist?(path)
         new_logger = ActiveSupport::BufferedLogger.new path
         new_logger.info "" if new_file # adds a line break if this is a new log
-        const = Object.const_set( "%s_LOGGER" % logger.upcase, new_logger )
-        Object.send(:define_method, :"#{logger.downcase}_logger") { const } # adds this method to Object - the mother of all classes!!!
+        const = Kernel.const_set( "%s_LOGGER" % logger.upcase, new_logger )
+        Kernel.send(:define_method, :"#{logger.downcase}_logger") { const } # adds this method to Kernel, included in Object!!!
       end
     end
     
