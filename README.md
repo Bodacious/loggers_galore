@@ -1,3 +1,5 @@
+_NOTE: This Rails 2 plugin is no longer maintained_
+
 # LoggersGalore
 
 Need more loggers? Loggers Galore allows you to create as many loggers as you require and access them anyplace in your app.
